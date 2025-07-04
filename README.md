@@ -1,4 +1,4 @@
-# Ceres DSP
+# Lyris
 At Ceres DSP, we believe in making the impossible fun. That is why we made Lyris, an ergonomics-first, data driven framework for digital signal processing. Lyris lets you focus on what matters: writing digital signal processors. 
 
 ```rust

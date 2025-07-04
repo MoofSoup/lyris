@@ -12,10 +12,10 @@ the `#[processor]`macro enables the processors to be pure functions, implementin
 #[processor]
 fn filter_component(
 	
-	audio_in: UseInput,     // Option<&[f32]>
-	cutoff: UseInput,       // Option<&[f32]>
-	audio_out: UseOutput,   // &mut [f32]
-	z1: UseF32,             // &mut f32
+	audio_in: Input,     // Option<&[f32]>
+	cutoff: Input,       // Option<&[f32]>
+	audio_out: Output,   // &mut [f32]
+	z1: F32,             // &mut f32
 	events: Events,         // Option<&[Event]>
 	
 ) { 
@@ -30,11 +30,11 @@ fn filter_component(
 Processors declare their requirements through zero-sized marker types that serve as compile-time contracts:
 
 ```rust
-pub struct UseInput; // "I need read access to an audio buffer"
+pub struct Input; // "I need read access to an audio buffer"
 
-pub struct UseOutput; // "I need write access to an audio buffer"
+pub struct Output; // "I need write access to an audio buffer"
 
-pub struct UseF32; // "I need mutable access to a single f32 state"
+pub struct F32; // "I need mutable access to a single f32 state"
 ```
 
 These markers prevent processors from accessing anything beyond their declared interface.
