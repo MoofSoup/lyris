@@ -6,7 +6,7 @@ description = "A real-time safe audio processing framework"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/MoofSoup/lyris"
 keywords = ["audio", "dsp", "real-time", "synthesis", "modular"]
-categories = ["multimedia::audio", "science::numerics"]
+categories = ["multimedia::audio"]
 readme = "README.md"
 
 [dependencies]
