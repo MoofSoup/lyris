@@ -1,12 +1,12 @@
 use super::types::*;
-use crate::{Clerk, Runtime, Router};
+use crate::{core::Clerk, Runtime, Router};
 use std::collections::HashMap;
 use std::any::TypeId;
 use std::cell::UnsafeCell;
 use std::sync::{Arc, Mutex};
 use std::fmt::Debug;
 
-pub(crate) struct Builder<E: Clone + Copy + Debug + 'static>{
+pub struct Builder<E: Clone + Copy + Debug + 'static>{
     components: Vec<(TypeId, &'static str, StoredComponent<E>)>,
     next_component_id: usize,
     buffer_size: usize,
@@ -23,7 +23,7 @@ impl<E: Clone + Copy + Debug> Builder<E> {
         }
     }
     
-    pub fn add_component<S: Schema>(
+    pub fn add_component<P: Processor>(
         mut self,
         instance_name: &'static str,
         component_fn: fn(&Runtime<E>, ContextHandle)
@@ -37,19 +37,19 @@ impl<E: Clone + Copy + Debug> Builder<E> {
             slot_ids_start: self.slots.len()
         };
 
-        for _slot in 0.. S::slot_count() {
+        for _slot in 0.. P::slot_count() {
             self.slots.push(UnsafeCell::new(0.0));
         };
 
         let stored = UserComponent {
             component: component_fn,
             context_handle: handle,
-            field_count: S::BUFFERS_COUNT,
+            field_count: P::buffers_count(),
             instance_name,
-            schema_type: TypeId::of::<S>(),
+            processor_type: TypeId::of::<P>(),
         };
 
-        self.components.push((TypeId::of::<S>(), instance_name, StoredComponent::User(stored)));
+        self.components.push((TypeId::of::<P>(), instance_name, StoredComponent::User(stored)));
         self
     }
 

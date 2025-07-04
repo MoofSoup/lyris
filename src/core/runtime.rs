@@ -55,7 +55,7 @@ impl<E: Clone + Copy> Runtime<E> {
         }
     }
     
-    pub fn get_ctx<T: Schema>(&self, handle: ContextHandle) -> Context<T, E> {
+    pub fn get_ctx<T: Processor>(&self, handle: ContextHandle) -> Context<T, E> {
         Context {
             runtime: self,
             handle,
@@ -78,7 +78,7 @@ impl<E: Clone + Copy> Runtime<E> {
         // Execute components
         for component in self.execution_order.iter(){
             match component {
-                StoredComponent::User(UserComponent{component, context_handle, field_count, instance_name, schema_type}) => {
+                StoredComponent::User(UserComponent{component, context_handle, field_count, instance_name, processor_type}) => {
                     component(&self, *context_handle)
                 },
                 StoredComponent::System(SystemComponent{component_id, instance_name, buffer_idx}) => {

@@ -367,7 +367,7 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
 
             BufferKey::User(key) => {
 
-                (key.schema_type, key.instance_name)
+                (key.processor_type, key.instance_name)
             }
         };
 
@@ -479,7 +479,7 @@ fn create_buffer_key_for_field<E: Clone + Copy + 'static>(
 ) -> BufferKey {
     match component {
         StoredComponent::User(user_comp) => BufferKey::User(UserKey {
-            schema_type: user_comp.schema_type,
+            processor_type: user_comp.processor_type,
             instance_name: user_comp.instance_name,
             field_idx,
         }),
@@ -540,7 +540,7 @@ enum BufferKey {
 // Internal routing key using TypeId
 #[derive(Clone, Copy, Hash, PartialEq, Eq)]
 struct UserKey {
-    schema_type: TypeId,
+    processor_type: TypeId,
     instance_name: &'static str,
     field_idx: usize,
 }
@@ -582,7 +582,7 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
                 instance_name: from.name,
             }),
             ResourceType::UseBuffer => BufferKey::User(UserKey {
-                schema_type: from.schema_type,
+                processor_type: from.processor_type,
                 instance_name: from.name,
                 field_idx: from.field_idx,
             }),
@@ -595,7 +595,7 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
                 instance_name: to.name,
             }),
             ResourceType::UseBuffer => BufferKey::User(UserKey {
-                schema_type: to.schema_type,
+                processor_type: to.processor_type,
                 instance_name: to.name,
                 field_idx: to.field_idx,
             }),

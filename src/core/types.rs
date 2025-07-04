@@ -5,15 +5,15 @@ use std::marker::PhantomData;
 use super::runtime::Runtime;
 use std::fmt;
 
-pub(crate) trait Resource{
+pub trait Resource{
     fn resource_type() -> ResourceType;
 }
-pub(crate) enum ResourceType{
+pub enum ResourceType{
     SystemBuffer,
     UseBuffer,
     F32,
 }
-// Marker types for schema fields
+// Marker types for processor fields
 pub struct Input;
 impl Resource for Input {
     fn resource_type() -> ResourceType {
@@ -27,15 +27,15 @@ impl Resource for Output {
     }
 }
 
-pub(crate) struct F32;
+pub struct F32;
 impl Resource for F32 {
     fn resource_type() -> ResourceType {
         ResourceType::F32
     }
 }
 
-pub trait Schema: 'static {
-    const BUFFERS_COUNT: usize;
+pub trait Processor: 'static {
+    fn buffers_count() -> usize;
     fn slot_count() -> usize;
 }
 
@@ -46,7 +46,7 @@ pub(crate) struct PhysicalBuffer(pub(crate) usize);
 pub(crate) struct ComponentId(pub(crate) usize);
 
 #[derive(Clone, Copy)]
-pub(crate) struct ContextHandle{
+pub struct ContextHandle{
     pub(crate) component_id: ComponentId,
     pub(crate) buffer_ids_start: BufferIdx,
     pub(crate) slot_ids_start: usize,
@@ -77,14 +77,14 @@ pub(crate) struct SystemBuffers{
 pub(crate) struct LogicalBuffer(pub(crate) usize);
 
 // Context provides safe wrapper around unsafe runtime access
-pub struct Context<'a, T: Schema, E: Clone + Copy + 'static> {
+pub struct Context<'a, T: Processor, E: Clone + Copy + 'static> {
     pub(crate) runtime: &'a Runtime<E>,
     pub(crate) handle: ContextHandle,  
     pub(crate) _phantom: PhantomData<T>,
     pub(crate) buffer_size: usize,
 }
 
-impl<'a, T: Schema, E: Clone + Copy> Context<'a, T, E> {
+impl<'a, T: Processor, E: Clone + Copy> Context<'a, T, E> {
     pub(crate) fn buffer_size(&self) -> usize {
         self.buffer_size
     }
@@ -104,7 +104,7 @@ pub struct UserComponent<E: Clone + Copy + 'static> {
     pub(crate) context_handle: ContextHandle,
     pub(crate) field_count: usize,
     pub(crate) instance_name: &'static str,
-    pub(crate) schema_type: TypeId,
+    pub(crate) processor_type: TypeId,
 }
 
 #[derive(Clone, Copy)]
@@ -121,9 +121,9 @@ pub enum StoredComponent<E: Clone + Copy + 'static>{
 }
 
 // Component name wrapper for fluent API
-pub struct ComponentName<S: Schema>{
-    pub(crate) name: &'static str,
-    pub(crate) _phantom: PhantomData<S>,
+pub struct ProcessorName<S: Processor>{
+    pub name: &'static str,
+    pub _phantom: PhantomData<S>,
 }
 
 // Buffer handle for type-safe routing
@@ -131,16 +131,16 @@ pub struct ComponentName<S: Schema>{
 pub struct BufferHandle<R: Resource> {
     pub(crate) name: &'static str,
     pub(crate) field_idx: usize,
-    pub(crate) schema_type: TypeId,
+    pub(crate) processor_type: TypeId,
     _marker: PhantomData<R>,
 }
 
 impl<R: Resource> BufferHandle<R> {
-    pub(crate) fn new(name: &'static str, field_idx: usize, schema_type: TypeId) -> Self {
+    pub fn new(name: &'static str, field_idx: usize, processor_type: TypeId) -> Self {
         Self {
             name,
             field_idx,
-            schema_type,
+            processor_type,
             _marker: PhantomData,
         }
     }
