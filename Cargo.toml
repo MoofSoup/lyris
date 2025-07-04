@@ -1,8 +1,21 @@
 [package]
-name = "ceres-v1"
-version = "0.1.0"
-edition = "2024"
+name = "lyris"
+version = "0.0.1"
+edition = "2021"
+description = "A real-time safe audio processing framework"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/MoofSoup/lyris"
+keywords = ["audio", "dsp", "real-time", "synthesis", "modular"]
+categories = ["multimedia::audio", "science::numerics"]
+readme = "README.md"
 
 [dependencies]
-cpal = "0.16.0"
 lockfree = "0.5.1"
+
+[lib]
+name = "lyris"
+
+# If you want to keep docs.rs happy
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
