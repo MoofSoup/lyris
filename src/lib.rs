@@ -1,5 +1,4 @@
 mod core;
-mod components;
 
 pub use {
     // Core building blocks
@@ -23,6 +22,3 @@ pub use {
     core::types::Resource,
     core::types::ResourceType,
 };
-
-#[cfg(feature = "built-in")]
-pub mod components;
