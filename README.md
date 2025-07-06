@@ -1,5 +1,5 @@
 # Lyris
-At Ceres DSP, we believe in making the impossible fun. That is why we made Lyris, an ergonomics-first, data driven framework for digital signal processing. Lyris lets you focus on what matters: writing digital signal processors. 
+At Ceres, we believe in making the impossible fun. That is why we made Lyris, an ergonomics-first, data driven framework for digital signal processing. Lyris lets you focus on what matters: writing digital signal processors. 
 
 ```rust
 #[processor]
@@ -21,8 +21,8 @@ fn filter_component(
 
 ```rust
 let (mut runtime, router) = Builder::<Event>::new()
-	.add_component::<SawOsc>("saw", saw_component) 
-	.add_component::<Filter>("filter 1", filter_component) 
+	.add_processor::<SawOsc>("saw", saw_component) 
+	.add_processor::<Filter>("filter 1", filter_component) 
 	.buffer_length(1024)
 	.build(); 
 
@@ -35,10 +35,22 @@ router.route(
 	Filter::named("filter 1").audio_out(), 
 	output() 
 );
-```
-Currently, we are still fleshing out the `#[processor]` macro. 
+``` 
 
 ## The Future:
-We are working on a feedback based drum synthesizer VST, inspired by SOPHIE. For updates, to contribute, or just to make cool projects and share your work, please join the official [Ceres Discord](https://discord.gg/QgVPEETetC)
+The future of Lyris contains:
+
+- The `#[processor]` macro
+- The multi-instancing API
+- Polyphonic runtimes
+
+A loose date for these features is September of 2025 (as I need a break from this project for a minute XD)
+
+At Ceres, I am working on a feedback based drum synthesizer VST, inspired by SOPHIE. For updates, to contribute, or just to make cool projects and share your work, please join the official [Ceres Discord](https://discord.gg/QgVPEETetC)
+
+Thanks for checking out Lyris!
+- Sylvia Soup <3
+
+
 
 

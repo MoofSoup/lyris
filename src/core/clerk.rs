@@ -6,6 +6,8 @@ use std::cell::UnsafeCell;
 use std::fmt::Debug;
 use crate::Runtime;
 use lockfree::channel::spsc::{Sender, Receiver};
+use super::router::{RoutingErr, PortHandle};
+use super::processor::{Port, PortType, SystemInput, SystemOutput, input, output};
 
 struct Ledger<E: Clone + Copy + 'static> {
 
@@ -189,14 +191,14 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
 
         let input_handle = input();
         let input_key = BufferKey::System(SystemKey {
-                marker: TypeId::of::<SystemBuffer>(),
+                marker: TypeId::of::<SystemOutput>(),
                 instance_name: input_handle.name,
             }
         );
 
         let output_handle = output();
         let output_key = BufferKey::System(SystemKey {
-                marker: TypeId::of::<SystemBuffer>(),
+                marker: TypeId::of::<SystemInput>(),
                 instance_name: output_handle.name,
             }
         );
@@ -372,7 +374,7 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
         };
 
         let stored_component = self.components.get(&component_key)
-            .ok_or(RoutingErr::ComponentNotFound)?;
+            .ok_or(RoutingErr::ProcessorNotFound)?;
 
         let component_id = match stored_component {
             StoredComponent::System(sys_comp) => {
@@ -483,10 +485,18 @@ fn create_buffer_key_for_field<E: Clone + Copy + 'static>(
             instance_name: user_comp.instance_name,
             field_idx,
         }),
-        StoredComponent::System(sys_comp) => BufferKey::System(SystemKey {
-            marker: TypeId::of::<SystemBuffer>(),
-            instance_name: sys_comp.instance_name,
-        }),
+        StoredComponent::System(sys_comp) => {
+            let marker = match sys_comp.instance_name {
+                "__system_input__" => TypeId::of::<SystemInput>(),
+                "__system_output__" => TypeId::of::<SystemOutput>(),
+                _ => unreachable!("This error should be unreachable. Unknown system component type"),
+            };
+            
+            BufferKey::System(SystemKey {
+                marker,
+                instance_name: sys_comp.instance_name,
+            })
+        }
     }
 }
 
@@ -568,38 +578,42 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
             event_tx,
         }
     }
-    pub(crate) fn add_route<R1: Resource + 'static, R2: Resource + 'static>(
+    pub(crate) fn add_route<P1: Port + 'static, P2: Port + 'static>(
         &mut self, 
-        from: BufferHandle<R1>, 
-        to: BufferHandle<R2>
+        from: PortHandle<P1>, 
+        to: PortHandle<P2>
     ) -> Result<(), RoutingErr> {
 
 
         // Convert buffer handles to buffer keys
-        let from_key = match R1::resource_type() {
-            ResourceType::SystemBuffer => BufferKey::System(SystemKey {
-                marker: TypeId::of::<R1>(),
+        let from_key = match P1::port_type() {
+            PortType::SystemOutput => BufferKey::System(SystemKey {
+                marker: TypeId::of::<P1>(),
                 instance_name: from.name,
             }),
-            ResourceType::UseBuffer => BufferKey::User(UserKey {
+            PortType::Output => BufferKey::User(UserKey {
                 processor_type: from.processor_type,
                 instance_name: from.name,
                 field_idx: from.field_idx,
             }),
-            ResourceType::F32 => panic!("fatal error: invalid buffer key")
+            _ => {
+                return Err(RoutingErr::FromPortIsInput);
+            }
         };
         
-        let to_key = match R2::resource_type() {
-            ResourceType::SystemBuffer => BufferKey::System(SystemKey {
-                marker: TypeId::of::<R2>(),
+        let to_key = match P2::port_type() {
+            PortType::SystemInput => BufferKey::System(SystemKey {
+                marker: TypeId::of::<P2>(),
                 instance_name: to.name,
             }),
-            ResourceType::UseBuffer => BufferKey::User(UserKey {
+            PortType::Input => BufferKey::User(UserKey {
                 processor_type: to.processor_type,
                 instance_name: to.name,
                 field_idx: to.field_idx,
             }),
-            ResourceType::F32 => panic!("fatal error: invalid buffer key")
+            _  => {
+                return Err(RoutingErr::ToPortIsOutput);
+            }
         };
 
         match self.ledger.add_route(from_key, to_key) {
@@ -617,7 +631,7 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
                     }
                 }));
                 
-                self.update_tx.send(update).map_err(|_| RoutingErr::BufferNotFound)?;
+                self.update_tx.send(update).map_err(|_| RoutingErr::PortNotFound)?;
                 Ok(())
             },
             Err(e) => {

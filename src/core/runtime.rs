@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::marker::PhantomData;
 use std::cell::UnsafeCell;
 use super::types::*;
-
+use std::any::Any;
 
 // Runtime uses UnsafeCell for interior mutability
 pub struct Runtime<E: Clone + Copy + 'static> {
@@ -11,8 +11,6 @@ pub struct Runtime<E: Clone + Copy + 'static> {
     pub(crate) buffer_ids: Vec<Option<PhysicalBuffer>>,
     pub(crate) buffers: HashMap<PhysicalBuffer, UnsafeCell<Vec<f32>>>,
     pub(crate) buffer_size: usize,
-
-    pub(crate) slots: Vec<UnsafeCell<f32>>,
     
     pub(crate) execution_order: Vec<StoredComponent<E>>,
     _event_type: PhantomData<E>,
@@ -25,6 +23,7 @@ pub struct Runtime<E: Clone + Copy + 'static> {
 
     pub(crate) current_events: Vec<E>,
 
+    pub(crate) states: Vec<Box<UnsafeCell<dyn Any>>>,
 
 }
 
@@ -32,7 +31,7 @@ impl<E: Clone + Copy> Runtime<E> {
     pub(crate) fn new(
         update_rx: lockfree::channel::spsc::Receiver<Update<E>>,
         event_rx: lockfree::channel::spsc::Receiver<E>,
-        slots: Vec<UnsafeCell<f32>>,
+        states: Vec<Box<UnsafeCell<dyn Any>>>,
         buffer_size: usize,
     ) -> Self {
 
@@ -45,21 +44,20 @@ impl<E: Clone + Copy> Runtime<E> {
             buffer_ids: Vec::new(),
             buffers: buffers,
             buffer_size: buffer_size,
-            slots: slots,
             execution_order: Vec::new(),
             _event_type: PhantomData,
             update_rx,
             event_rx,
             system_buffers: SystemBuffers{input: None, output: None},
             current_events: Vec::new(),
+            states: states,
         }
     }
     
-    pub fn get_ctx<T: Processor>(&self, handle: ContextHandle) -> Context<T, E> {
+    pub fn get_ctx(&self, handle: ContextHandle) -> Context<E> {
         Context {
             runtime: self,
             handle,
-            _phantom: PhantomData,
             buffer_size: self.buffer_size,
         }
     }

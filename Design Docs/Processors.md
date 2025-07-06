@@ -174,7 +174,7 @@ This teaches us that the runtime manages a lookup table mapping processor depend
 
 ### State Management
 The `ContextHandle` also teaches us the runtime manages a vec of state slots, which we can unpack. The lifecycle of a state slot is:
-- `builder.add_component<my_processor>('name')` is called
+- `builder.add_processor<my_processor>('name')` is called
 - a `StoredComponent<MyEventType>` is created
 - `StoredComponent<E>`  stores  a context handle,
 - and in it stores the result of `my_processor::slot_count()`

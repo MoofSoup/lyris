@@ -1,4 +1,5 @@
 mod core;
+// mod components;
 
 pub use {
     // Core building blocks
@@ -7,18 +8,17 @@ pub use {
     core::Router,
     
     // Marker Types
-    core::types::Input,
-    core::types::Output,
-    core::types::F32,
+    core::processor::Input,
+    core::processor::Output,
+    core::processor::State,
     
     // Routing helpers
-    core::types::ProcessorName,
-    core::types::BufferHandle,
-    core::types::input,
-    core::types::output,  // if this is your helper for output routing
+    core::router::PortHandle,
+    core::processor::input,
+    core::processor::output, 
     
-    // Processor trait if still needed
-    core::types::Processor,
-    core::types::Resource,
-    core::types::ResourceType,
+
+    core::processor::Processor,
+    core::processor::Port,
+    core::processor::PortType,
 };
