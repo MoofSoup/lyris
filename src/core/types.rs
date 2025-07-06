@@ -64,8 +64,8 @@ pub enum StoredComponent<E: Clone + Copy + 'static>{
 
 // Context provides safe wrapper around unsafe runtime access
 pub struct Context<'a, E: Clone + Copy + 'static> {
-    pub(crate) runtime: &'a Runtime<E>,
-    pub(crate) handle: ContextHandle,
+    pub runtime: &'a Runtime<E>,
+    pub handle: ContextHandle,
     pub(crate) buffer_size: usize,
 }
 
