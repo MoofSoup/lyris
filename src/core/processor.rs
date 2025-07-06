@@ -6,7 +6,6 @@ pub use std::any::Any;
 pub use super::types::{ContextHandle, BufferIdx};
 pub use super::Runtime;
 pub use super::router::PortHandle;
-use std::ops::{Deref, DerefMut};
 
 
 pub trait Port{
@@ -25,52 +24,44 @@ pub struct Output<'a>(&'a mut [f32]);
 pub struct State<'a, T: Default>(&'a mut T);
 pub struct Events<'a, E>(&'a mut E);
 
-impl<'a> Deref for Input<'a> {
-    type Target = Option<&'a [f32]>;
-    
-    fn deref(&self) -> &Self::Target {
+impl<'a> AsRef<Option<&'a [f32]>> for Input<'a> {
+    fn as_ref(&self) -> &Option<&'a [f32]> {
         &self.0
     }
 }
 
-impl<'a> Deref for Output<'a> {
-    type Target = [f32];
-    
-    fn deref(&self) -> &Self::Target {
+impl<'a> AsRef<[f32]> for Output<'a> {
+    fn as_ref(&self) -> &[f32] {
         self.0
     }
 }
 
-impl<'a> DerefMut for Output<'a> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
+impl<'a> AsMut<[f32]> for Output<'a> {
+    fn as_mut(&mut self) -> &mut [f32] {
         self.0
     }
 }
 
-impl<'a, T: Default> Deref for State<'a, T> {
-    type Target = T;
-    
-    fn deref(&self) -> &Self::Target {
+impl<'a, T: Default> AsRef<T> for State<'a, T> {
+    fn as_ref(&self) -> &T {
         self.0
     }
 }
 
-impl<'a, T: Default> DerefMut for State<'a, T> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
+impl<'a, T: Default> AsMut<T> for State<'a, T> {
+    fn as_mut(&mut self) -> &mut T {
         self.0
     }
 }
 
-impl<'a, E> Deref for Events<'a, E> {
-    type Target = E;
-    
-    fn deref(&self) -> &Self::Target {
+impl<'a, E> AsRef<E> for Events<'a, E> {
+    fn as_ref(&self) -> &E {
         self.0
     }
 }
 
-impl<'a, E> DerefMut for Events<'a, E> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
+impl<'a, E> AsMut<E> for Events<'a, E> {
+    fn as_mut(&mut self) -> &mut E {
         self.0
     }
 }
