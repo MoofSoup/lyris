@@ -6,6 +6,7 @@ pub use std::any::Any;
 pub use super::types::{ContextHandle, BufferIdx};
 pub use super::Runtime;
 pub use super::router::PortHandle;
+use std::ops::{Deref, DerefMut};
 
 
 pub trait Port{
@@ -23,6 +24,56 @@ pub struct Input<'a>(Option<&'a [f32]>);
 pub struct Output<'a>(&'a mut [f32]);
 pub struct State<'a, T: Default>(&'a mut T);
 pub struct Events<'a, E>(&'a mut E);
+
+impl<'a> Deref for Input<'a> {
+    type Target = Option<&'a [f32]>;
+    
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<'a> Deref for Output<'a> {
+    type Target = [f32];
+    
+    fn deref(&self) -> &Self::Target {
+        self.0
+    }
+}
+
+impl<'a> DerefMut for Output<'a> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
+    }
+}
+
+impl<'a, T: Default> Deref for State<'a, T> {
+    type Target = T;
+    
+    fn deref(&self) -> &Self::Target {
+        self.0
+    }
+}
+
+impl<'a, T: Default> DerefMut for State<'a, T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
+    }
+}
+
+impl<'a, E> Deref for Events<'a, E> {
+    type Target = E;
+    
+    fn deref(&self) -> &Self::Target {
+        self.0
+    }
+}
+
+impl<'a, E> DerefMut for Events<'a, E> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        self.0
+    }
+}
 
 // Marker types for processor fields
 impl Port for Input<'_> {

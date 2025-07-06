@@ -15,8 +15,8 @@ pub(crate) struct ComponentId(pub(crate) usize);
 #[derive(Clone, Copy)]
 pub struct ContextHandle{
     pub(crate) component_id: ComponentId,
-    pub(crate) buffer_ids_start: BufferIdx,
-    pub(crate) slot_ids_start: usize,
+    pub buffer_ids_start: BufferIdx,
+    pub slot_ids_start: usize,
 }
 
 #[derive(Clone, Copy)]
@@ -70,9 +70,9 @@ pub struct Context<'a, E: Clone + Copy + 'static> {
 }
 
 impl<'a, E: Clone + Copy> Context<'a, E> {
-    pub(crate) fn buffer_size(&self) -> usize {
-        self.buffer_size
-    }
+    pub fn buffer_size(&self) -> usize { todo!(); }
+
+    pub fn sample_rate(){ todo!(); }
 
     pub fn get_events(&self) -> &[E] {
         &self.runtime.current_events
