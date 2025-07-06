@@ -1,16 +1,14 @@
 mod core;
-// mod components;
 
 pub use {
     // Core building blocks
     core::Builder,
     core::Runtime,
     core::Router,
-    
-    // Marker Types
-    core::processor::Input,
-    core::processor::Output,
-    core::processor::State,
+
+    // the whole processor module
+    core::processor,
+
     
     // Routing helpers
     core::router::PortHandle,

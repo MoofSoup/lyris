@@ -1,7 +1,7 @@
 mod clerk;
 pub(crate) mod runtime;
 pub(crate) mod types;
-pub(crate) mod processor;
+pub mod processor;
 mod builder;
 pub(crate) mod router;
 
