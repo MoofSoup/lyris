@@ -66,7 +66,7 @@ impl<'a, E> Deref for Events<'a, E> {
     type Target = E;
     
     fn deref(&self) -> &Self::Target {
-        &self.0
+        &*self.0
     }
 }
 
