@@ -18,7 +18,7 @@ impl<E: Clone + Copy + Debug> Builder<E> {
     pub fn new() -> Self {
         Self {
             components: Vec::new(),
-            next_component_id: 2,
+            next_component_id: 0,
             buffer_size: 512,
             states: Vec::new(),
         }
