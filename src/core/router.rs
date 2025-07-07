@@ -34,15 +34,17 @@ impl<E: Clone + Copy + 'static + std::fmt::Debug> Router<E> {
 pub struct PortHandle<P: Port> {
     pub(crate) name: &'static str,
     pub(crate) field_idx: usize,
+    pub(crate) port_type: TypeId,
     pub(crate) processor_type: TypeId,
     _marker: PhantomData<P>,
 }
 
 impl<P: Port> PortHandle<P> {
-    pub fn new(name: &'static str, field_idx: usize, processor_type: TypeId) -> Self {
+    pub fn new(name: &'static str, field_idx: usize, port_type: TypeId, processor_type: TypeId) -> Self {
         Self {
             name,
             field_idx,
+            port_type,
             processor_type,
             _marker: PhantomData,
         }

@@ -165,11 +165,11 @@ pub struct ProcessorName<P: Processor>{
 }
 
 pub fn output() -> PortHandle<SystemOutput> {
-    PortHandle::new("__system_output__", 0, TypeId::of::<SystemOutput>())
+    PortHandle::new("__system_output__", 0, TypeId::of::<SystemOutput>(), TypeId::of::<SystemOutput>())
 }
 
 pub fn input() -> PortHandle<SystemInput> {
-    PortHandle::new("__system_input__", 0, TypeId::of::<SystemInput>())
+    PortHandle::new("__system_input__", 0, TypeId::of::<SystemInput>(), TypeId::of::<SystemInput>())
 }
 
 
@@ -229,18 +229,18 @@ mod test_filter{
 
         fn get_handle() -> FilterHandle {
             FilterHandle {
-                audio_in: PortHandle::new("audio_in", 0, TypeId::of::<Input>()),
-                audio_out: PortHandle::new("audio_out", 1, TypeId::of::<Output>())
+                audio_in: PortHandle::new("audio_in", 0, TypeId::of::<Input>(), TypeId::of::<Filter>()),
+                audio_out: PortHandle::new("audio_out", 1, TypeId::of::<Output>(), TypeId::of::<Filter>())
             }
         }
     }
 
     pub fn audio_in() -> PortHandle<Input<'static>> {
-        PortHandle::new("audio_in", 0, TypeId::of::<Input>())
+        PortHandle::new("audio_in", 0, TypeId::of::<Input>(), TypeId::of::<Filter>())
     }
 
     pub fn audio_out() -> PortHandle<Output<'static>> {
-        PortHandle::new("audio_out", 1, TypeId::of::<Output>())
+        PortHandle::new("audio_out", 1, TypeId::of::<Output>(), TypeId::of::<Filter>())
     }
 
     pub fn new() -> Filter{
