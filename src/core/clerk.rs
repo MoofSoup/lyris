@@ -533,11 +533,11 @@ fn assign_buffers_to_map<E: Clone + Copy + 'static>(
             .flat_map(|(component, start_idx)| {
                 let component_ref: &StoredComponent<E> = &*component;
                 (0..get_length(component_ref))
-                    .map(move |field_idx| (component_ref, start_idx + field_idx))
+                    .map(move |field_idx| (component_ref, start_idx, field_idx))
             })
-            .for_each(|(component, idx)| {
-                let buffer_key = create_buffer_key_for_field(component, idx);
-                buffer_map[idx] = lookup_physical_buffer(&buffer_key, logical_buffer_map, best_buffer_allocations);
+            .for_each(|(component, global_idx, field_idx)| {
+                let buffer_key = create_buffer_key_for_field(component, field_idx); 
+                buffer_map[global_idx + field_idx] = lookup_physical_buffer(&buffer_key, logical_buffer_map, best_buffer_allocations);
             });
 
         buffer_map
@@ -588,6 +588,8 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
 
         // Convert buffer handles to buffer keys
         let from_key = match P1::port_type() {
+            // The SystemInput port is an *output* port
+            // *named* SystemInput
             PortType::SystemInput => BufferKey::System(SystemKey {
                 marker: TypeId::of::<P1>(),
                 instance_name: from.name,
@@ -603,6 +605,8 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
         };
         
         let to_key = match P2::port_type() {
+            // The SystemOutput port is an *input* port
+            // *named* SystemOutput
             PortType::SystemOutput => BufferKey::System(SystemKey {
                 marker: TypeId::of::<P2>(),
                 instance_name: to.name,
