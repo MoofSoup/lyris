@@ -3,7 +3,7 @@ pub use std::any::TypeId;
 pub use std::cell::UnsafeCell;
 pub use std::marker::PhantomData;
 pub use std::any::Any;
-pub use super::types::{ContextHandle, BufferIdx};
+pub use super::types::{ContextHandle, Context, BufferIdx};
 pub use super::Runtime;
 pub use super::router::PortHandle;
 
@@ -182,7 +182,6 @@ mod test_filter{
     
     // unique key struct:
     struct Filter;
-    use crate::core::types::*;
 
     // the macro can 
     struct FilterHandle {
