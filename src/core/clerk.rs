@@ -220,21 +220,7 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
         let input_component_id = self.get_component_id_for_buffer_key(input_key)?;
         let output_component_id = self.get_component_id_for_buffer_key(output_key)?;
 
-        // Build system buffers - only create components that were actually routed
-        let system_buffers = SystemBuffers {
-            input: input_info.map(|(_, physical_buffer)| SystemComponent {
-                component_id: input_component_id,
-                buffer_idx: BufferIdx(physical_buffer.0),
-                instance_name: input_handle.name,
-            }),
-            output: output_info.map(|(_, physical_buffer)| SystemComponent {
-                component_id: output_component_id,
-                buffer_idx: BufferIdx(physical_buffer.0),
-                instance_name: output_handle.name,
-            }),
-        };
-
-        self.convert_results(best_order, best_buffer_allocations, system_buffers)
+        self.convert_results(best_order, best_buffer_allocations, input_component_id, output_component_id)
 
     }
     
@@ -404,7 +390,8 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
         &self,
         best_order: Vec<ComponentId>,
         best_buffer_allocations: HashMap<LogicalBuffer, PhysicalBuffer>,
-        system_buffers: SystemBuffers,
+        input_component_id: ComponentId,
+        output_component_id: ComponentId,
     ) -> Result<(
         Vec<StoredComponent<E>>, 
         Vec<Option<PhysicalBuffer>>,
@@ -426,8 +413,37 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
             &best_buffer_allocations,
             self.buffer_len
         );
+
+        let system_buffers = create_system_buffers(
+            &component_map,
+            input_component_id,
+            output_component_id,
+        );
         
         Ok((execution_order, buffer_map, physical_buffers, system_buffers))
+    }
+}
+
+fn create_system_buffers<E: Clone + Copy + 'static>(
+    component_map: &HashMap<ComponentId, &StoredComponent<E>>,
+    input_component_id: ComponentId,
+    output_component_id: ComponentId,
+) -> SystemBuffers {
+    let input_component = component_map.get(&input_component_id)
+        .and_then(|comp| match comp {
+            StoredComponent::System(sys_comp) => Some(sys_comp),
+            _ => None,
+        });
+    
+    let output_component = component_map.get(&output_component_id)
+        .and_then(|comp| match comp {
+            StoredComponent::System(sys_comp) => Some(*sys_comp),
+            _ => None,
+        });
+    
+    SystemBuffers {
+        input: input_component.copied(),
+        output: output_component,
     }
 }
 
