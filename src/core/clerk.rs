@@ -80,6 +80,7 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
             new_buffer
         };
         
+
         // Connect the to_key to the same logical buffer
         self.logical_buffer_map.insert(to_key, logical_buffer);
 
@@ -191,14 +192,14 @@ impl<E: Clone + Copy + 'static> Ledger<E> {
 
         let input_handle = input();
         let input_key = BufferKey::System(SystemKey {
-                marker: TypeId::of::<SystemOutput>(),
+                marker: TypeId::of::<SystemInput>(),
                 instance_name: input_handle.name,
             }
         );
 
         let output_handle = output();
         let output_key = BufferKey::System(SystemKey {
-                marker: TypeId::of::<SystemInput>(),
+                marker: TypeId::of::<SystemOutput>(),
                 instance_name: output_handle.name,
             }
         );
