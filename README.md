@@ -55,7 +55,7 @@ A loose date for these features is September of 2025 (as I need a break from thi
 At Ceres, I am working on a feedback based drum synthesizer VST, inspired by SOPHIE. For updates, to contribute, or just to make cool projects and share your work, please join the official [Ceres Discord](https://discord.gg/QgVPEETetC)
 
 Thanks for checking out Lyris!
-- Sylvia Soup <3
+~ Sylvia Soup <3
 
 
 
