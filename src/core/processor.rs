@@ -26,10 +26,10 @@ pub struct State<'a, T: Default>(&'a mut T);
 pub struct Events<'a, E>(&'a mut E);
 
 impl<'a> Deref for Input<'a> {
-    type Target = [f32];
+    type Target = Option<&'a [f32]>;
     
     fn deref(&self) -> &Self::Target {
-        self.0.unwrap_or(&[])  // Returns empty slice if None
+        &self.0
     }
 }
 
@@ -37,13 +37,13 @@ impl<'a> Deref for Output<'a> {
     type Target = [f32];
     
     fn deref(&self) -> &Self::Target {
-        &self.0
+        self.0
     }
 }
 
 impl<'a> DerefMut for Output<'a> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
+        self.0 
     }
 }
 
@@ -51,28 +51,27 @@ impl<T: Default> Deref for State<'_, T> {
     type Target = T;
     
     fn deref(&self) -> &Self::Target {
-        &self.0
+        self.0  // Remove the & - self.0 is already &mut T, which coerces to &T
     }
 }
 
 impl<T: Default> DerefMut for State<'_, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
+        self.0  // Remove the &mut - self.0 is already &mut T
     }
 }
-
 
 impl<'a, E> Deref for Events<'a, E> {
     type Target = E;
     
     fn deref(&self) -> &Self::Target {
-        &*self.0
+        self.0
     }
 }
 
 impl<'a, E> DerefMut for Events<'a, E> {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
+        self.0
     }
 }
 
