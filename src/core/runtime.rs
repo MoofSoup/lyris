@@ -5,7 +5,7 @@ use super::types::*;
 use std::any::Any;
 
 // Runtime uses UnsafeCell for interior mutability
-pub struct Runtime<E: Clone + Copy + 'static> {
+pub struct Runtime<E: Clone + Copy + 'static,> {
 
     // None indicates that the field at idx is not routed to a physical buffer
     pub(crate) buffer_ids: Vec<Option<PhysicalBuffer>>,
@@ -23,16 +23,15 @@ pub struct Runtime<E: Clone + Copy + 'static> {
 
     pub(crate) current_events: Vec<E>,
 
-    pub(crate) states: Vec<Box<UnsafeCell<dyn Any + Send>>>,
+    pub(crate) states: Vec<Box<UnsafeCell<dyn Any + Send + 'static>>>,
 
-    
 }
 
 impl<E: Clone + Copy> Runtime<E> {
     pub(crate) fn new(
         update_rx: lockfree::channel::spsc::Receiver<Update<E>>,
         event_rx: lockfree::channel::spsc::Receiver<E>,
-        states: Vec<Box<UnsafeCell<dyn Any + Send>>>,
+        states: Vec<Box<UnsafeCell<dyn Any + Send + 'static>>>,
         buffer_size: usize,
     ) -> Self {
 

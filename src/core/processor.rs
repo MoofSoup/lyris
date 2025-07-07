@@ -22,7 +22,7 @@ pub enum PortType{
 // Processor argument marker types
 pub struct Input<'a>(Option<&'a [f32]>);
 pub struct Output<'a>(&'a mut [f32]);
-pub struct State<'a, T: Default + Send>(&'a mut T);
+pub struct State<'a, T: Default + Send + 'static>(&'a mut T);
 pub struct Events<'a, E>(&'a mut E);
 
 impl<'a> Deref for Input<'a> {
