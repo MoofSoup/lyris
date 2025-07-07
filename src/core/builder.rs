@@ -11,7 +11,7 @@ pub struct Builder<E: Clone + Copy + Debug + 'static>{
     components: Vec<(TypeId, &'static str, StoredComponent<E>)>,
     next_component_id: usize,
     buffer_size: usize,
-    states: Vec<Box<UnsafeCell<dyn Any>>>,
+    states: Vec<Box<UnsafeCell<dyn Any + Send>>>,
 }
 
 impl<E: Clone + Copy + Debug> Builder<E> {

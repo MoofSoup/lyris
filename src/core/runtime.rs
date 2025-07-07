@@ -23,7 +23,7 @@ pub struct Runtime<E: Clone + Copy + 'static> {
 
     pub(crate) current_events: Vec<E>,
 
-    pub(crate) states: Vec<Box<UnsafeCell<dyn Any>>>,
+    pub(crate) states: Vec<Box<UnsafeCell<dyn Any + Send>>>,
 
 }
 
@@ -31,7 +31,7 @@ impl<E: Clone + Copy> Runtime<E> {
     pub(crate) fn new(
         update_rx: lockfree::channel::spsc::Receiver<Update<E>>,
         event_rx: lockfree::channel::spsc::Receiver<E>,
-        states: Vec<Box<UnsafeCell<dyn Any>>>,
+        states: Vec<Box<UnsafeCell<dyn Any + Send>>>,
         buffer_size: usize,
     ) -> Self {
 

@@ -22,7 +22,7 @@ pub enum PortType{
 // Processor argument marker types
 pub struct Input<'a>(Option<&'a [f32]>);
 pub struct Output<'a>(&'a mut [f32]);
-pub struct State<'a, T: Default>(&'a mut T);
+pub struct State<'a, T: Default + Send>(&'a mut T);
 pub struct Events<'a, E>(&'a mut E);
 
 impl<'a> Deref for Input<'a> {
@@ -47,7 +47,7 @@ impl<'a> DerefMut for Output<'a> {
     }
 }
 
-impl<T: Default> Deref for State<'_, T> {
+impl<T: Default + Send> Deref for State<'_, T> {
     type Target = T;
     
     fn deref(&self) -> &Self::Target {
@@ -55,7 +55,7 @@ impl<T: Default> Deref for State<'_, T> {
     }
 }
 
-impl<T: Default> DerefMut for State<'_, T> {
+impl<T: Default + Send> DerefMut for State<'_, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         self.0  // Remove the &mut - self.0 is already &mut T
     }
@@ -107,7 +107,7 @@ pub trait Processor: 'static {
     fn buffers_count() -> usize;
     fn slot_count() -> usize;
     fn call<E: Clone + Copy>(runtime: &Runtime<E>, handle: ContextHandle);
-    fn create_states() -> Vec<Box<UnsafeCell<dyn Any>>>;
+    fn create_states() -> Vec<Box<UnsafeCell<dyn Any + Send>>>;
     fn get_handle() -> Self::Handle;
 }
 
@@ -143,7 +143,7 @@ pub fn get_output<E: Clone + Copy + 'static>(runtime: &Runtime<E>, buffer_idx: B
     Output(buffer_ref)
 }
 
-pub fn get_state<T: Default + 'static, E: Clone + Copy + 'static>(
+pub fn get_state<T: Default + Send + 'static, E: Clone + Copy + 'static>(
     runtime: &Runtime<E>, 
     state_idx: usize
 ) -> State<T> {
@@ -221,7 +221,7 @@ mod test_filter{
 
         }
 
-        fn create_states() -> Vec<Box<UnsafeCell<dyn Any>>> {
+        fn create_states() -> Vec<Box<UnsafeCell<dyn Any + Send>>> {
             vec![
                 Box::new(UnsafeCell::new(FilterState::default())),
             ]
