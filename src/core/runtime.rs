@@ -150,3 +150,5 @@ impl<E: Clone + Copy> Runtime<E> {
     }
 
 }
+
+unsafe impl<E: Clone + Copy + 'static> Send for Runtime<E> {}
