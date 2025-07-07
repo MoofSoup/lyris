@@ -588,7 +588,7 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
 
         // Convert buffer handles to buffer keys
         let from_key = match P1::port_type() {
-            PortType::SystemOutput => BufferKey::System(SystemKey {
+            PortType::SystemInput => BufferKey::System(SystemKey {
                 marker: TypeId::of::<P1>(),
                 instance_name: from.name,
             }),
@@ -603,7 +603,7 @@ impl<E: Clone + Copy + Debug + 'static> Clerk<E> {
         };
         
         let to_key = match P2::port_type() {
-            PortType::SystemInput => BufferKey::System(SystemKey {
+            PortType::SystemOutput => BufferKey::System(SystemKey {
                 marker: TypeId::of::<P2>(),
                 instance_name: to.name,
             }),
