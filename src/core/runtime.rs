@@ -152,3 +152,47 @@ impl<E: Clone + Copy> Runtime<E> {
 }
 
 unsafe impl<E: Clone + Copy + 'static> Send for Runtime<E> {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::any::Any;
+    use std::cell::UnsafeCell;
+
+    #[derive(Clone, Copy)]
+    struct TestEvent;
+
+    fn test_send<T: Send>() {}
+
+    #[test]
+    fn test_any_send() {
+        // Test individual components
+        let _: Box<UnsafeCell<dyn Any + Send + 'static>> = Box::new(UnsafeCell::new(42i32));
+        let states: Vec<Box<UnsafeCell<dyn Any + Send + 'static>>> = vec![
+            Box::new(UnsafeCell::new(42i32)),
+            Box::new(UnsafeCell::new(String::from("test"))),
+        ];
+        
+        // Test that the states vector is Send
+        test_send::<Vec<Box<UnsafeCell<dyn Any + Send + 'static>>>>();
+        
+        // Test a minimal runtime-like struct
+        struct TestRuntime {
+            states: Vec<Box<UnsafeCell<dyn Any + Send + 'static>>>,
+        }
+        
+        let test_runtime = TestRuntime { states };
+        
+        // This should compile if Send is working
+        test_send::<TestRuntime>();
+        
+        println!("All Send tests passed!");
+    }
+    
+    #[test]
+    fn test_runtime_send() {
+        // Test that Runtime itself is Send
+        test_send::<Runtime<TestEvent>>();
+        println!("Runtime Send test passed!");
+    }
+}

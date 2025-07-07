@@ -18,7 +18,7 @@ impl<E: Clone + Copy + Debug> Builder<E> {
     pub fn new() -> Self {
         Self {
             components: Vec::new(),
-            next_component_id: 0,
+            next_component_id: 2,
             buffer_size: 512,
             states: Vec::new(),
         }
@@ -94,7 +94,7 @@ impl<E: Clone + Copy + Debug> Builder<E> {
         let mut components = HashMap::new();
 
         let input_component = StoredComponent::System(SystemComponent {
-            component_id: ComponentId(0), // system components have hard coded input
+            component_id: ComponentId(0),
             instance_name: "__system_input__",
             buffer_idx: BufferIdx(0), // will be configured during routing!
         });

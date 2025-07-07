@@ -235,6 +235,14 @@ mod test_filter{
         }
     }
 
+    pub fn audio_in() -> PortHandle<Input<'static>> {
+        PortHandle::new("audio_in", 0, TypeId::of::<Input>())
+    }
+
+    pub fn audio_out() -> PortHandle<Output<'static>> {
+        PortHandle::new("audio_out", 1, TypeId::of::<Output>())
+    }
+
     pub fn new() -> Filter{
         Filter
     }
