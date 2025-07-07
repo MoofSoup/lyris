@@ -6,7 +6,7 @@ pub use std::any::Any;
 pub use super::types::{ContextHandle, Context, BufferIdx};
 pub use super::Runtime;
 pub use super::router::PortHandle;
-use std::ops::{Deref, DerefMut};
+pub use std::ops::{Deref, DerefMut};
 
 
 pub trait Port{
@@ -113,7 +113,7 @@ pub trait Processor: 'static {
 
 pub trait ProcessorHandle {}
 
-fn get_input<E: Clone + Copy + 'static>(runtime: &Runtime<E>, buffer_idx: BufferIdx) -> Input {
+pub fn get_input<E: Clone + Copy + 'static>(runtime: &Runtime<E>, buffer_idx: BufferIdx) -> Input {
 
     let buffer_id = runtime.buffer_ids[buffer_idx.0]
         .expect("Input buffer not routed to physical buffer");
