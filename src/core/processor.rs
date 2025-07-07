@@ -107,7 +107,7 @@ pub trait Processor: 'static {
     fn buffers_count() -> usize;
     fn slot_count() -> usize;
     fn call<E: Clone + Copy>(runtime: &Runtime<E>, handle: ContextHandle);
-    fn create_states() -> Vec<Box<UnsafeCell<dyn Any + Send>>>;
+    fn create_states() -> Vec<Box<UnsafeCell<dyn Any + Send + 'static>>>;
     fn get_handle() -> Self::Handle;
 }
 
@@ -221,7 +221,7 @@ mod test_filter{
 
         }
 
-        fn create_states() -> Vec<Box<UnsafeCell<dyn Any + Send>>> {
+        fn create_states() -> Vec<Box<UnsafeCell<dyn Any + Send + 'static>>> {
             vec![
                 Box::new(UnsafeCell::new(FilterState::default())),
             ]
