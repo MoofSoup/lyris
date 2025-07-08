@@ -4,6 +4,8 @@ At Ceres, we believe in making the impossible fun. That is why we made Lyris, an
 ```rust
 #[processor]
 pub mod filter{
+
+	#[derive(Default)]
 	struct FilterState {
 		z1: f32,
 	}
@@ -41,6 +43,8 @@ router.route(
 	filter::audio_out(), 
 	lyris::output() 
 );
+
+runtime.process(None, output_buffer);
 ``` 
 
 ## The Future:
@@ -56,7 +60,3 @@ At Ceres, I am working on a feedback based drum synthesizer VST, inspired by SOP
 
 Thanks for checking out Lyris!
 ~ Sylvia Soup <3
-
-
-
-
