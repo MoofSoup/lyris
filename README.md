@@ -10,16 +10,16 @@ pub mod filter{
 
 	fn filter(
 		
-		audio_in: Input,     				// derefs into Option<&[f32]>, 
-		cutoff: Input,       				// derefs into Option<&[f32]>
-		audio_out: Output,   				// deref muts into &mut [f32]
-		z1: State<FilterState>,             // derefs into &mut FilterState
-		events: Events,         			// Option<&[Event]>, events are copyable
+		audio_in: Input,     			// derefs into Option<&[f32]>, 
+		cutoff: Input,       			// derefs into Option<&[f32]>
+		audio_out: Output,   			// deref muts into &mut [f32]
+		state: State<FilterState>,		// derefs into &mut FilterState
+		events: Events,         		// Option<&[Event]>, events are copyable
 		
 	) { 
 		for (i, &sample) in audio_in.unwrap_or(&[]).enumerate() {
-			audio_out[i] = z1;
-			*z1 = sample * 0.1 + *z1 * 0.9;
+			audio_out[i] = state.z1;
+			state.z1 = sample * 0.1 + state.z1 * 0.9;
 		}
 	}
 }
